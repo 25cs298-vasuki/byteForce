@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DisasterMesh · Crisis Dispatch Command Center</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#F5F2EA;--card:#fff;--ink:#18323A;--mute:#6B7F84;--line:#E3DED2;--teal:#14746F;--sage:#D6E8E1;--sea:#CFE5EE;--land:#F0EBDD;--road:#E1DAC6;--c4:#E4694B;--c3:#F0A04B;--c2:#E8C547;--c1:#6DB8A0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1E22;--card:#162A2F;--ink:#E6F0EE;--mute:#8FA7AB;--line:#264047;--teal:#4FC1B6;--sage:#1F3B3A;--sea:#12323F;--land:#1A3036;--road:#254046}}
+:root[data-theme="dark"]{--bg:#0F1E22;--card:#162A2F;--ink:#E6F0EE;--mute:#8FA7AB;--line:#264047;--teal:#4FC1B6;--sage:#1F3B3A;--sea:#12323F;--land:#1A3036;--road:#254046}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 "Segoe UI",system-ui,-apple-system,"Helvetica Neue",sans-serif}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--line)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:.2px}
+.logo i{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,var(--teal),#7FB7D9);display:grid;place-items:center;color:#fff;font-style:normal}
+.logo small{display:block;font-weight:400;font-size:11.5px;color:var(--mute);letter-spacing:0}
+.tabs{display:flex;background:var(--sage);padding:4px;border-radius:999px}
+.tabs button{border:0;background:none;color:var(--ink);padding:8px 16px;border-radius:999px;font:inherit;cursor:pointer}
+.tabs button.on{background:var(--teal);color:#fff}
+.pill{font-size:12px;padding:5px 10px;border-radius:999px;background:var(--sage)}
+.pill b{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--c1);margin-right:6px}
+main{display:grid;grid-template-columns:400px 1fr;gap:16px;padding:16px 20px;max-width:1500px;margin:auto}
+@media(max-width:900px){main{grid-template-columns:1fr;padding:12px}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 2px 10px rgba(20,60,60,.05)}
+h2{font-size:15px;margin:0 0 10px;display:flex;justify-content:space-between;align-items:center}
+textarea,select,input[type=text]{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:12px;padding:10px;font:inherit}
+textarea{min-height:92px;resize:vertical}
+.btn{border:0;border-radius:12px;padding:10px 14px;background:var(--teal);color:#fff;font:inherit;font-weight:600;cursor:pointer}
+.btn.ghost{background:var(--sage);color:var(--ink)}.btn.sm{padding:6px 10px;font-size:13px;border-radius:9px}
+.btn.full{width:100%;margin-top:10px}
+.seg{display:flex;gap:6px;margin-bottom:10px}.seg button{flex:1;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:8px;border-radius:10px;cursor:pointer;font:inherit}
+.seg button.on{background:var(--sage);border-color:var(--teal)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.chip{font-size:12px;padding:3px 9px;border-radius:999px;background:var(--sage);cursor:default}
+.chip.q{cursor:pointer;background:var(--bg);border:1px solid var(--line)}
+.sev{color:#fff;border-radius:8px;padding:2px 8px;font-size:12px;font-weight:600}
+.s4{background:var(--c4)}.s3{background:var(--c3)}.s2{background:var(--c2);color:#3a3000}.s1{background:var(--c1)}
+.parse{background:var(--bg);border-radius:12px;padding:10px;font-size:13px;margin-top:8px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.right{display:flex;flex-direction:column;gap:16px;min-width:0}
+.mapwrap{position:relative;border-radius:18px;overflow:hidden;border:1px solid var(--line)}
+svg.map{display:block;width:100%;height:auto;background:var(--land);cursor:crosshair}
+.legend{position:absolute;left:12px;bottom:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px 10px;font-size:11.5px;display:flex;gap:10px;flex-wrap:wrap}
+.legend span::before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;background:var(--c)}
+.pulse{animation:p 2.4s ease-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes p{0%{opacity:.5;transform:scale(.7)}100%{opacity:0;transform:scale(1.5)}}
+.inc{border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px;background:var(--card);border-left:6px solid var(--c)}
+.inc.sel{outline:2px solid var(--teal)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.muted{color:var(--mute);font-size:12.5px}
+.bar{height:6px;border-radius:6px;background:var(--sage);overflow:hidden;margin:6px 0}.bar i{display:block;height:100%;background:var(--teal)}
+.units{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.unit{border:1px solid var(--line);border-radius:12px;padding:10px;font-size:13px}
+.st{font-size:11.5px;padding:2px 8px;border-radius:999px;background:var(--sage)}.st.en{background:#F7DFA8;color:#4a3800}.st.on{background:#F4B7A6;color:#5a1d0d}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px}.kpi b{font-size:22px;display:block}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;display:none;z-index:9}
+.hide{display:none!important}
+</style></head><body>
+<header>
+ <div class="logo"><i>◎</i><div>DisasterMesh<small>Many voices → one clear picture</small></div></div>
+ <div class="tabs"><button id="tCit" class="on">Citizen SOS</button><button id="tCmd">Command Center</button></div>
+ <div class="row"><span class="pill" id="dbst"><b></b>connecting…</span></div>
+</header>
+<main>
+ <div class="stack" id="left">
+  <section class="card" id="citizen">
+   <h2>Report an emergency <span class="muted">stay calm, help is routed</span></h2>
+   <div class="seg" id="chan"><button data-c="text" class="on">✍️ Text</button><button data-c="voice">🎙️ Voice</button><button data-c="image">📷 Image</button></div>
+   <div id="voiceBox" class="hide" style="margin-bottom:8px"><button class="btn ghost sm" id="mic">🎙️ Tap &amp; speak</button> <span class="muted" id="micMsg">Transcript fills the box below</span></div>
+   <div id="imgBox" class="hide" style="margin-bottom:8px"><input type="file" id="img" accept="image/*"><div class="muted">Add a caption describing what the photo shows.</div></div>
+   <textarea id="msg" placeholder="e.g. Water chest-high in Velachery, 5 people incl. 2 kids and an elderly man stuck on the roof, need boat"></textarea>
+   <div class="chips" id="samples"><span class="chip q">Velachery flood</span><span class="chip q">Adyar fire</span><span class="chip q">T Nagar collapse</span></div>
+   <div class="parse" id="live"><span class="muted">Live understanding appears here as you type.</span></div>
+   <div class="muted" style="margin-top:8px">📍 No place name? Tap the map to drop a pin: <b id="pinTxt">none</b></div>
+   <button class="btn full" id="send">Send SOS</button>
+   <div class="parse hide" id="result"></div>
+  </section>
+  <section class="card hide" id="command">
+   <h2>Triage queue <label class="muted"><input type="checkbox" id="auto" checked> auto-dispatch</label></h2>
+   <div id="queue"></div>
+   <div class="row" style="margin-top:6px"><button class="btn ghost sm" id="seed">Load simulated crisis</button><button class="btn ghost sm" id="reset">Clear all</button></div>
+  </section>
+ </div>
+ <div class="right">
+  <div class="kpis" id="kpis"></div>
+  <div class="mapwrap"><svg class="map" id="map" viewBox="0 0 1000 640"></svg>
+   <div class="legend"><span style="--c:var(--c4)">Critical</span><span style="--c:var(--c3)">High</span><span style="--c:var(--c2)">Moderate</span><span style="--c:var(--c1)">Low</span><span>Halo = corroborating reports</span></div></div>
+  <section class="card"><h2>Field units <span class="muted">live status</span></h2><div class="units" id="units"></div></section>
+ </div>
+</main>
+<div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s), esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ZONES={"Royapuram":[700,70],"Anna Nagar":[330,150],"Egmore":[520,170],"Kodambakkam":[330,280],"T Nagar":[400,300],"Marina Beach":[735,250],"Mylapore":[570,320],"Saidapet":[400,370],"Guindy":[300,410],"Adyar":[560,420],"Besant Nagar":[650,500],"Velachery":[440,510],"Perungudi":[520,570],"Tambaram":[200,570]};
+const norm=s=>s.toLowerCase().replace(/\btnagar\b/g,'t nagar').replace(/\bbesant\b/g,'besant nagar').replace(/\bmarina\b/g,'marina beach').replace(/[.,]/g,' ').replace(/\s+/g,' ');
+const SEV=[[4,/trapped|drown\w*|unconscious|not breathing|can'?t breathe|collaps\w*|heavy bleeding|spreading|explosion|buried/g],[3,/injur\w*|child\w*|kids?|baby|infant|elderly|old (?:man|woman)|pregnan\w*|roof|waist|chest|neck deep|fire|smoke|bleeding|stuck|oxygen|insulin/g],[2,/stranded|rising|water (?:is )?(?:entering|inside)|no power|help|urgent|sos/g],[1,/food|tree|blocked|road|supplies|drinking water/g]];
+const CAT=[['fire',/fire|smoke|burning|blaze/],['medical',/injur|bleed|unconscious|breath|heart|pregnan|medical|insulin|oxygen/],['collapse',/collaps|debris|buried|wall fell|building/],['flood',/flood|water|drown|boat|roof|rising|stranded|cyclone/]];
+const CI={fire:'🔥',medical:'🩺',collapse:'🏚️',flood:'🌊',other:'⚠️'}, SN=['','Low','Moderate','High','Critical'];
+const PREF={flood:['boat','ndrf'],fire:['fire','ndrf'],medical:['amb','ndrf'],collapse:['ndrf','amb'],other:['ndrf','amb','boat','fire']};
+const UI={boat:'🚤',amb:'🚑',fire:'🚒',ndrf:'🛟'};
+const SC=['','var(--c1)','var(--c2)','var(--c3)','var(--c4)'];
+function parse(t){const n=norm(t);let loc=null,area=null;
+ for(const k in ZONES){if(n.includes(norm(k))){loc=ZONES[k];area=k;break}}
+ let best=0,hits=0,why=new Set();
+ for(const[w,re]of SEV){for(const m of n.matchAll(re)){hits++;why.add(m[0]);if(w>best)best=w}}
+ let people=1;const pm=n.match(/(\d+)\s*(?:people|persons?|family|members|kids|children|residents|of us)/)||n.match(/(?:family of|total)\s*(\d+)/);if(pm)people=Math.min(+pm[1],200);
+ if(best==3&&(hits>=4||people>=6))best=4;if(!best)best=n.length>3?1:0;
+ let cat='other';for(const[c,re]of CAT){if(re.test(n)){cat=c;break}}
+ return{loc,area,sev:best,cat,people,why:[...why].slice(0,6)}}
+const S={inc:[],units:[],rep:[]};let DB=null,sel=null,pin=null,chan='text';
+const COL={inc:'incidents',units:'units',rep:'reports'};
+async function save(k,o){const a=S[k],i=a.findIndex(x=>x.id==o.id);if(i<0)a.push(o);else a[i]=o;if(DB){try{await DB.collection(COL[k]).doc(o.id).set(o)}catch(e){toast('Save failed: '+(e.message||e.code))}}}
+async function del(k,id){S[k]=S[k].filter(x=>x.id!=id);if(DB)try{await DB.collection(COL[k]).doc(id).delete()}catch(e){}}
+const uid=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+const mins=t=>Math.max(0,Math.floor((Date.now()-t)/60000));
+function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',3500)}
+function state(u){if(u.status!='dispatched')return'available';return(Date.now()-u.t0)/1000>=u.eta?'on scene':'en route'}
+function upos(u){if(u.status!='dispatched')return{x:u.x,y:u.y};const f=Math.min(1,(Date.now()-u.t0)/(u.eta*1000));return{x:u.x+(u.tx-u.x)*f,y:u.y+(u.ty-u.y)*f}}
+async function dispatch(incId){const inc=S.inc.find(i=>i.id==incId);if(!inc||inc.unitId)return null;
+ const pr=PREF[inc.cat]||PREF.other;let c=S.units.filter(u=>u.status!='dispatched'&&pr.includes(u.type));
+ c.sort((a,b)=>pr.indexOf(a.type)-pr.indexOf(b.type)||Math.hypot(a.x-inc.x,a.y-inc.y)-Math.hypot(b.x-inc.x,b.y-inc.y));
+ const u=c[0];if(!u)return null;const d=Math.hypot(u.x-inc.x,u.y-inc.y);
+ const nu={...u,status:'dispatched',incId:inc.id,tx:inc.x,ty:inc.y,t0:Date.now(),eta:Math.max(8,Math.min(45,Math.round(d*.18))),etaMin:Math.round(d*.08)+2};
+ await save('units',nu);await save('inc',{...inc,unitId:u.id});return nu}
+async function resolve(id){const inc=S.inc.find(i=>i.id==id);if(!inc)return;const u=S.units.find(x=>x.id==inc.unitId);
+ if(u)await save('units',{...u,status:'available',x:inc.x,y:inc.y,incId:null,tx:null,ty:null});await save('inc',{...inc,status:'resolved',unitId:null})}
+async function submit(){const text=$('#msg').value.trim();if(text.length<4)return toast('Please describe the emergency.');
+ const p=parse(text);let at=p.loc,area=p.area;if(!at&&pin){at=[pin.x,pin.y];area='Pinned location'}
+ if(!at)return toast('No place found — mention an area or tap the map.');
+ const x=at[0]+(Math.random()*14-7),y=at[1]+(Math.random()*14-7);
+ let inc=S.inc.filter(i=>i.status!='resolved'&&i.cat==p.cat&&Math.hypot(i.x-x,i.y-y)<30).sort((a,b)=>Math.hypot(a.x-x,a.y-y)-Math.hypot(b.x-x,b.y-y))[0];
+ const merged=!!inc;
+ if(inc){const n=inc.reports+1;inc={...inc,x:(inc.x*inc.reports+x)/n,y:(inc.y*inc.reports+y)/n,reports:n,sev:Math.max(inc.sev,p.sev),people:Math.max(inc.people,p.people),why:[...new Set([...inc.why,...p.why])].slice(0,8),updated:Date.now(),last:text}}
+ else inc={id:uid('i'),x,y,area,cat:p.cat,sev:p.sev||2,reports:1,people:p.people,why:p.why,created:Date.now(),updated:Date.now(),status:'open',unitId:null,last:text};
+ await save('inc',inc);await save('rep',{id:uid('r'),text,channel:chan,incId:inc.id,created:Date.now(),sev:p.sev,cat:p.cat,area});
+ sel=inc.id;let u=null;if($('#auto').checked&&!inc.unitId)u=await dispatch(inc.id);
+ const cur=S.inc.find(i=>i.id==inc.id);
+ const r=$('#result');r.classList.remove('hide');
+ r.innerHTML=`<b>SOS received ✔</b><br>${CI[p.cat]} ${esc(p.cat)} · <span class="sev s${cur.sev}">${SN[cur.sev]}</span> · ${esc(area)}<br>`+
+ (merged?`🧩 Matched with a nearby report — now <b>${cur.reports} corroborating reports</b>, one incident, no duplicate dispatch.<br>`:`🆕 New incident opened.<br>`)+
+ (cur.unitId?(u?`${UI[u.type]} <b>${esc(u.name)}</b> dispatched · ETA ~${u.etaMin} min`:`${UI[(S.units.find(x=>x.id==cur.unitId)||{}).type]||''} A unit is already on the way to this incident.`):`⏳ Queued for dispatcher — no free unit matched yet.`);
+ $('#msg').value='';liveParse();render()}
+function liveParse(){const t=$('#msg').value,box=$('#live');if(t.trim().length<4){box.innerHTML='<span class="muted">Live understanding appears here as you type.</span>';return}
+ const p=parse(t);box.innerHTML=`📍 ${p.area?esc(p.area):'<i>no place yet</i>'} · ${CI[p.cat]} ${p.cat} · <span class="sev s${p.sev||1}">${SN[p.sev||1]}</span> · 👥 ${p.people}<div class="chips">${p.why.map(w=>`<span class="chip">${esc(w)}</span>`).join('')}</div>`}
+function render(){renderMap();renderQueue();renderUnits();renderKpi()}
+function renderKpi(){const o=S.inc.filter(i=>i.status!='resolved');const av=S.units.filter(u=>u.status!='dispatched').length;
+ const k=[['Open incidents',o.length],['Critical',o.filter(i=>i.sev==4).length],['Reports merged',S.rep.length-S.inc.length>0?S.rep.length-S.inc.length:0],['Units free',av+'/'+S.units.length]];
+ $('#kpis').innerHTML=k.map(a=>`<div class="kpi"><b>${a[1]}</b><span class="muted">${a[0]}</span></div>`).join('')}
+function renderMap(){let h=`<path d="M770,0 C760,150 790,260 760,330 S800,500 840,640 L1000,640 L1000,0Z" fill="var(--sea)"/>
+<path d="M150,450 C300,420 450,430 560,440 S700,470 805,470" stroke="var(--sea)" stroke-width="9" fill="none" opacity=".8"/>
+<path d="M180,200 C330,230 450,190 560,215 S700,230 765,262" stroke="var(--sea)" stroke-width="7" fill="none" opacity=".8"/>
+<path d="M0,330 L760,300 M330,0 L400,640 M560,0 L520,640 M0,160 L740,190" stroke="var(--road)" stroke-width="5" fill="none"/>`;
+ for(const k in ZONES)h+=`<text x="${ZONES[k][0]}" y="${ZONES[k][1]+28}" font-size="12" text-anchor="middle" fill="var(--mute)">${k}</text>`;
+ h+=`<text x="900" y="320" font-size="14" fill="var(--teal)" opacity=".7" text-anchor="middle">Bay of Bengal</text>`;
+ for(const u of S.units){if(u.status=='dispatched'){const i=S.inc.find(z=>z.id==u.incId),p=upos(u);if(i)h+=`<line x1="${p.x}" y1="${p.y}" x2="${i.x}" y2="${i.y}" stroke="var(--teal)" stroke-width="2" stroke-dasharray="6 5"/>`}}
+ for(const i of S.inc){if(i.status=='resolved')continue;const c=SC[i.sev],r=16+i.reports*7;
+  h+=`<g data-i="${i.id}" style="cursor:pointer"><circle class="pulse" cx="${i.x}" cy="${i.y}" r="${r}" fill="${c}"/><circle cx="${i.x}" cy="${i.y}" r="${r}" fill="${c}" opacity=".18"/><circle cx="${i.x}" cy="${i.y}" r="13" fill="${c}" stroke="${i.id==sel?'var(--ink)':'#fff'}" stroke-width="3"/><text x="${i.x}" y="${i.y+5}" font-size="14" text-anchor="middle">${CI[i.cat]}</text>${i.reports>1?`<text x="${i.x+15}" y="${i.y-12}" font-size="12" font-weight="700" fill="var(--ink)">×${i.reports}</text>`:''}</g>`}
+ for(const u of S.units){const p=upos(u),s=state(u);h+=`<g><rect x="${p.x-13}" y="${p.y-13}" width="26" height="26" rx="8" fill="var(--card)" stroke="${s=='available'?'var(--teal)':'var(--c3)'}" stroke-width="2.5"/><text x="${p.x}" y="${p.y+6}" font-size="15" text-anchor="middle">${UI[u.type]}</text></g>`}
+ if(pin)h+=`<g><circle cx="${pin.x}" cy="${pin.y}" r="9" fill="none" stroke="var(--c4)" stroke-width="3"/><circle cx="${pin.x}" cy="${pin.y}" r="3" fill="var(--c4)"/></g>`;
+ $('#map').innerHTML=h}
+const pri=i=>i.sev*10+Math.min(i.reports,6)*3+i.people*1.2+mins(i.created)*.4;
+function renderQueue(){const o=S.inc.filter(i=>i.status!='resolved').sort((a,b)=>pri(b)-pri(a));
+ $('#queue').innerHTML=o.length?o.map((i,n)=>{const u=S.units.find(x=>x.id==i.unitId),conf=Math.min(100,35+i.reports*18);
+ return `<div class="inc ${i.id==sel?'sel':''}" style="--c:${SC[i.sev]}" data-i="${i.id}"><div class="row"><b>#${n+1} ${CI[i.cat]} ${esc(i.area||'Unknown')}</b><span class="sev s${i.sev}">${SN[i.sev]}</span></div>
+ <div class="muted">👥 ${i.people} · ${i.reports} report${i.reports>1?'s':''} · waiting <span data-t="${i.created}">${mins(i.created)}</span> min</div>
+ <div class="bar" title="Mesh confidence"><i style="width:${conf}%"></i></div><div class="muted">Mesh confidence ${conf}% · Golden-hour clock ${Math.min(60,mins(i.created))}/60 min</div>
+ <div class="chips">${(i.why||[]).map(w=>`<span class="chip">${esc(w)}</span>`).join('')}</div>
+ <div class="row">${u?`<span class="st ${state(u)=='on scene'?'on':'en'}">${UI[u.type]} ${esc(u.name)} · ${state(u)}</span>`:`<button class="btn sm" data-d="${i.id}">Dispatch nearest</button>`}<button class="btn ghost sm" data-r="${i.id}">Mark resolved</button></div></div>`}).join(''):'<div class="muted">No open incidents. Load the simulated crisis or send an SOS.</div>'}
+function renderUnits(){$('#units').innerHTML=S.units.map(u=>{const s=state(u),i=S.inc.find(z=>z.id==u.incId);return `<div class="unit"><div class="row"><b>${UI[u.type]} ${esc(u.name)}</b><span class="st ${s=='on scene'?'on':s=='en route'?'en':''}">${s}</span></div><div class="muted">${i?'→ '+esc(i.area||'incident'):'Standing by'}</div></div>`}).join('')||'<div class="muted">No units yet.</div>'}
+async function seed(){const I=[['Velachery','flood',4,3,9,'waist-deep water, elderly trapped on roof'],['Velachery','flood',3,2,4,'water rising, need boat'],['Adyar','fire',3,2,3,'smoke from godown near river'],['T Nagar','collapse',4,2,6,'wall collapsed, people trapped'],['Tambaram','medical',3,1,2,'pregnant woman needs ambulance'],['Royapuram','flood',2,1,5,'stranded families, no power']];
+ for(const[a,c,s,r,p,t]of I){const z=ZONES[a];await save('inc',{id:uid('i'),x:z[0]+Math.random()*20-10,y:z[1]+Math.random()*20-10,area:a,cat:c,sev:s,reports:r,people:p,why:parse(t).why,created:Date.now()-Math.random()*25*60000,updated:Date.now(),status:'open',unitId:null,last:t})}
+ const U=[['Boat Alpha','boat','Adyar'],['Boat Bravo','boat','Marina Beach'],['Medic 7','amb','Egmore'],['Medic 12','amb','Guindy'],['Fire Engine 3','fire','Mylapore'],['Fire Engine 9','fire','Anna Nagar'],['NDRF Team 1','ndrf','Saidapet'],['NDRF Team 2','ndrf','Perungudi']];
+ for(const[n,t,a]of U){if(S.units.some(u=>u.name==n))continue;const z=ZONES[a];await save('units',{id:uid('u'),name:n,type:t,x:z[0]+14,y:z[1]-14,status:'available',incId:null})}
+ render();toast('Simulated crisis loaded')}
+async function clearAll(){for(const k of['inc','units','rep'])for(const o of[...S[k]])await del(k,o.id);sel=null;$('#result').classList.add('hide');render()}
+function show(t){const c=t=='cit';$('#citizen').classList.toggle('hide',!c);$('#command').classList.toggle('hide',c);$('#tCit').classList.toggle('on',c);$('#tCmd').classList.toggle('on',!c)}
+$('#tCit').onclick=()=>show('cit');$('#tCmd').onclick=()=>show('cmd');
+$('#send').onclick=submit;$('#msg').oninput=liveParse;$('#seed').onclick=seed;$('#reset').onclick=clearAll;
+const SAMP={'Velachery flood':'Water chest-high in Velachery, 5 people including 2 kids and an elderly man stuck on the roof, need a boat urgently','Adyar fire':'Fire spreading in a godown near Adyar river, thick smoke, 3 workers trapped inside','T Nagar collapse':'Old building wall collapsed in T Nagar, people trapped under debris, one bleeding heavily'};
+$('#samples').onclick=e=>{const k=e.target.textContent;if(SAMP[k]){$('#msg').value=SAMP[k];liveParse()}};
+$('#chan').onclick=e=>{const b=e.target.closest('button');if(!b)return;chan=b.dataset.c;[...$('#chan').children].forEach(x=>x.classList.toggle('on',x==b));$('#voiceBox').classList.toggle('hide',chan!='voice');$('#imgBox').classList.toggle('hide',chan!='image')};
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+$('#mic').onclick=()=>{if(!SR){$('#micMsg').textContent='Voice not supported here — paste a transcript instead.';return}try{const r=new SR();r.onresult=e=>{$('#msg').value=e.results[0][0].transcript;liveParse()};r.onerror=()=>$('#micMsg').textContent='Mic unavailable — paste a transcript.';r.start();$('#micMsg').textContent='Listening…'}catch(e){$('#micMsg').textContent='Mic unavailable — paste a transcript.'}};
+$('#img').onchange=e=>{const f=e.target.files[0];if(f&&!$('#msg').value)$('#msg').placeholder='Caption for '+f.name+' (where, what, how many people?)'};
+$('#map').onclick=e=>{const g=e.target.closest('[data-i]');if(g){sel=g.dataset.i;render();return}
+ const r=$('#map').getBoundingClientRect();pin={x:(e.clientX-r.left)/r.width*1000,y:(e.clientY-r.top)/r.height*640};$('#pinTxt').textContent='dropped ✔';renderMap()};
+$('#queue').onclick=async e=>{const d=e.target.closest('[data-d]'),r=e.target.closest('[data-r]'),c=e.target.closest('[data-i]');
+ if(d){const u=await dispatch(d.dataset.d);toast(u?u.name+' dispatched':'No suitable free unit');render()}
+ else if(r){await resolve(r.dataset.r);render()}else if(c){sel=c.dataset.i;render()}};
+setInterval(()=>{renderMap();document.querySelectorAll('[data-t]').forEach(el=>el.textContent=mins(+el.dataset.t));renderUnits()},1000);
+(async()=>{try{DB=window.claude?await claude.use('db'):null}catch(e){DB=null}
+ const p=$('#dbst');
+ if(DB){p.innerHTML='<b></b>Live database';
+  for(const k in COL)DB.collection(COL[k]).onSnapshot(s=>{S[k]=s.docs.map(d=>({id:d.id,...d.data()}));render()},e=>toast('DB: '+e.code))}
+ else{p.innerHTML='<b style="background:var(--c3)"></b>Local demo (not persisted)'}
+ render()})();
+</script></body></html>
