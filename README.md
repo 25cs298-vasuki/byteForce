@@ -21,4 +21,5 @@ Open `index.html` in a browser, or serve the folder: `python -m http.server 8000
 `index.html` calls a `db` object when the host provides one and otherwise runs in local in-memory mode.
 To persist in your own deployment, replace the `save()`, `del()` and snapshot-subscription code
 with calls to your backend (Firebase / Supabase / Express + Postgres). Keep keys server-side or
-protected by security rules, never in the client bundle.
+protected by security rules, never in the client bundle. 
+
